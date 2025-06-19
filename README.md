@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Application Portfolio PHP/MySQL
 
 ## Installation et Configuration
@@ -121,3 +122,6 @@ Une fois installée, accédez à :
 - Activez l'affichage des erreurs PHP
 - Vérifiez les logs d'erreur du serveur
 - Assurez-vous que toutes les classes sont bien incluses
+=======
+# PORTFOLIO
+>>>>>>> 16d823039003296bbc4a74392f914d23ef4d6060
