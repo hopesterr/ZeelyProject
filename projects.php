@@ -249,7 +249,7 @@ foreach ($user_projects as $project) {
                                                 </button>
                                                 <div id="menu-<?php echo $project['id']; ?>" class="project-dropdown" 
                                                      style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid var(--gray-200); border-radius: 0.75rem; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); z-index: 10; min-width: 200px;">
-                                                    <a href="project.php?id=<?php echo $project['id']; ?>" 
+                                                    <a href="voirprojet.php?id=<?php echo $project['id']; ?>" 
                                                        style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--gray-700); border-bottom: 1px solid var(--gray-100);">
                                                         👁️ Voir le projet
                                                     </a>
@@ -289,7 +289,7 @@ foreach ($user_projects as $project) {
                                         
                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--gray-200);">
                                             <div style="display: flex; gap: 0.75rem;">
-                                                <a href="project.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
+                                                <a href="voirprojet.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">
                                                     👁️ Voir
                                                 </a>
                                                 <a href="project-form.php?id=<?php echo $project['id']; ?>" class="btn btn-secondary btn-sm">
