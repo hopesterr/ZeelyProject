@@ -1,16 +1,12 @@
 <?php
-/**
- * Application Configuration
- */
-
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 // Application settings
-define('APP_NAME', 'Portfolio App');
-define('BASE_URL', 'http://localhost/portfolio');
+define('APP_NAME', 'Zeely');
+define('BASE_URL', 'http://localhost/projectb2');
 define('UPLOAD_PATH', 'uploads/');
 define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
 
@@ -19,12 +15,16 @@ define('SESSION_LIFETIME', 3600); // 1 hour
 define('REMEMBER_TOKEN_LIFETIME', 30 * 24 * 3600); // 30 days
 define('CSRF_TOKEN_NAME', 'csrf_token');
 
-// Database
-require_once 'database.php';
+// Base de données 
+define('DB_HOST', 'localhost');
+define('DB_PORT', 3306);
+define('DB_NAME', 'projetb2');
+define('DB_USER', 'projetb2');
+define('DB_PASS', 'password');
 
-// Autoload classes
+// Autoload des classes
 spl_autoload_register(function ($class_name) {
-    $directories = ['models/', 'controllers/', 'utils/'];
+    $directories = ['models/', 'controllers/', 'utils/','config/'];
     
     foreach ($directories as $directory) {
         $file = $directory . $class_name . '.php';
@@ -35,7 +35,7 @@ spl_autoload_register(function ($class_name) {
     }
 });
 
-// Security functions
+// Fonctions de sécurité et session
 function generateCSRFToken() {
     if (!isset($_SESSION[CSRF_TOKEN_NAME])) {
         $_SESSION[CSRF_TOKEN_NAME] = bin2hex(random_bytes(32));
@@ -74,7 +74,6 @@ function requireAdmin() {
     }
 }
 
-// Error handling
 function handleError($message, $redirect = null) {
     $_SESSION['error'] = $message;
     if ($redirect) {
@@ -90,4 +89,3 @@ function handleSuccess($message, $redirect = null) {
         exit();
     }
 }
-?>

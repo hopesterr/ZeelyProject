@@ -1,10 +1,14 @@
--- Portfolio Application Database Schema
--- Execute this script to create the database structure
+-- Création de la base de données et de l'utilisateur
+CREATE DATABASE IF NOT EXISTS projetb2 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-CREATE DATABASE IF NOT EXISTS portfolio_app CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE portfolio_app;
+CREATE USER IF NOT EXISTS 'projetb2'@'localhost' IDENTIFIED BY 'password';
 
--- Users table with roles
+GRANT ALL PRIVILEGES ON projetb2.* TO 'projetb2'@'localhost';
+FLUSH PRIVILEGES;
+
+USE projetb2;
+
+-- TABLE: users
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -22,7 +26,7 @@ CREATE TABLE users (
     reset_token_expires DATETIME DEFAULT NULL
 );
 
--- Skills table
+-- TABLE: skills
 CREATE TABLE skills (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
@@ -32,7 +36,7 @@ CREATE TABLE skills (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- User skills relationship with levels
+-- TABLE: user_skills
 CREATE TABLE user_skills (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -46,7 +50,7 @@ CREATE TABLE user_skills (
     UNIQUE KEY unique_user_skill (user_id, skill_id)
 );
 
--- Projects table
+-- TABLE: projects
 CREATE TABLE projects (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -63,7 +67,7 @@ CREATE TABLE projects (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Sessions table for remember me functionality
+-- TABLE: user_sessions
 CREATE TABLE user_sessions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -73,11 +77,22 @@ CREATE TABLE user_sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Insert default admin user (password: admin123)
+-- TABLE: project_likes
+CREATE TABLE project_likes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    project_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_like (user_id, project_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
+-- ADMIN PAR DÉFAUT (mot de passe: password)
 INSERT INTO users (username, email, password_hash, first_name, last_name, role) VALUES 
 ('admin', 'admin@portfolio.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'User', 'admin');
 
--- Insert sample skills
+-- SKILLS PAR DÉFAUT
 INSERT INTO skills (name, category) VALUES 
 ('PHP', 'Backend'),
 ('JavaScript', 'Frontend'),

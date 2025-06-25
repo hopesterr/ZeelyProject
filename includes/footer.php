@@ -1,13 +1,4 @@
 <footer class="main-footer">
-  <!-- Bascule mode sombre -->
-  <button id="dark-mode-toggle"
-          style="position:fixed;top:1rem;right:1rem;background:none;border:none;font-size:1.5rem;cursor:pointer;z-index:1000;">
-    🌙
-  </button>
-
-  <script src="assets/js/main.js"></script>
-
-<script src="assets/js/main.js"></script>
     <div class="container">
         <div class="footer-content">
             <div class="footer-section">

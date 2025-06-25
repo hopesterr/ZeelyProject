@@ -1,32 +1,55 @@
 // Modern Portfolio App - JavaScript Interactions
 
 document.addEventListener('DOMContentLoaded', function() {
-  // ——— Dark Mode Toggle ———
-  const darkToggle = document.getElementById('dark-mode-toggle');
-  const storageKey = 'darkModeEnabled';
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  if (darkToggle) {
-    // 1) État initial
-    const saved = localStorage.getItem(storageKey);
-    const isDark = (saved === 'true') || (saved === null && prefersDark);
-    if (isDark) document.body.classList.add('dark');
-    darkToggle.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
-
-    // 2) Au clic, on bascule
-    darkToggle.addEventListener('click', () => {
-      const now = document.body.classList.toggle('dark');
-      darkToggle.textContent = now ? '☀️' : '🌙';
-      localStorage.setItem(storageKey, now);
-    });
-  }
     // Initialize all components
     initMobileMenu();
     initSmoothScrolling();
     initFormEnhancements();
     initAnimations();
     initHeaderEffects();
+    initDarkMode();
 });
+
+// Dark Mode Functionality
+function initDarkMode() {
+    // Check for saved dark mode preference or default to light mode
+    const savedMode = localStorage.getItem('darkMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedMode === 'true' || (!savedMode && prefersDark)) {
+        document.body.classList.add('dark-mode');
+    }
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('darkMode')) {
+            if (e.matches) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+        }
+    });
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    const isDarkMode = body.classList.contains('dark-mode');
+    
+    if (isDarkMode) {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('darkMode', 'false');
+    } else {
+        body.classList.add('dark-mode');
+        localStorage.setItem('darkMode', 'true');
+    }
+    
+    // Add a subtle animation effect
+    body.style.transition = 'all 0.3s ease';
+    setTimeout(() => {
+        body.style.transition = '';
+    }, 300);
+}
 
 // Mobile Menu Toggle
 function initMobileMenu() {
@@ -178,23 +201,28 @@ function initHeaderEffects() {
     
     function updateHeader() {
         const scrollY = window.scrollY;
-        
-        if (scrollY > 100) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-        
-        // Hide/show header on scroll
-        if (scrollY > lastScrollY && scrollY > 200) {
-            header.classList.add('hidden');
-        } else {
-            header.classList.remove('hidden');
-        }
-        
-        lastScrollY = scrollY;
-        ticking = false;
+        const isDark = document.body.classList.contains('dark-mode');
+
+    if (scrollY > 100) {
+        header.classList.add('scrolled');
+        header.style.background = isDark ? 'rgba(17, 24, 39, 0.95)' : 'rgba(255, 255, 255, 0.98)';
+        header.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+    } else {
+        header.classList.remove('scrolled');
+        header.style.background = isDark ? 'rgba(17, 24, 39, 0.90)' : 'rgba(255, 255, 255, 0.95)';
+        header.style.boxShadow = 'none';
     }
+
+    // Hide/show header on scroll direction
+    if (scrollY > lastScrollY && scrollY > 200) {
+        header.classList.add('hidden');
+    } else {
+        header.classList.remove('hidden');
+    }
+
+    lastScrollY = scrollY;
+    ticking = false;
+}
     
     window.addEventListener('scroll', () => {
         if (!ticking) {
@@ -302,17 +330,6 @@ function initLazyLoading() {
     });
     
     images.forEach(img => imageObserver.observe(img));
-}
-
-// Dark Mode Toggle (if implemented)
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-}
-
-// Initialize dark mode from localStorage
-if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
 }
 
 // Export functions for global use

@@ -4,7 +4,7 @@ require_once 'config/config.php';
 $database = new Database();
 $db = $database->getConnection();
 $projectModel = new Project($db);
-$likeModel    = new Like($db);
+$likeModel = new Like($db);
 
 // Pagination
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -14,9 +14,16 @@ $offset = ($page - 1) * $limit;
 $projects = $projectModel->getAllProjects($limit, $offset);
 $total_projects = $projectModel->countProjects();
 $total_pages = ceil($total_projects / $limit);
-$top_projects  = $likeModel->getTopWeek(3);
-$success_message = $_SESSION['success'] ?? '';
-unset($_SESSION['success']);
+
+// Get top projects of the week
+$top_projects = $likeModel->getTopWeek(3);
+
+// Handle success message from logout
+$success_message = '';
+if (isset($_SESSION['success'])) {
+    $success_message = $_SESSION['success'];
+    unset($_SESSION['success']);
+}
 ?>
 
 <!DOCTYPE html>
@@ -31,21 +38,14 @@ unset($_SESSION['success']);
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
-<?php if ($success_message): ?>
-  <div class="alert-success" style="
-       background: rgba(16,185,129,0.1);
-       border: 1px solid rgba(16,185,129,0.2);
-       color: #065f46;
-       padding: 1rem;
-       text-align: center;
-       font-weight: 500;
-       margin: 1rem auto;
-       max-width: 600px;
-  ">
-    ✅ <?= htmlspecialchars($success_message) ?>
-  </div>
-<?php endif; ?>
+
     <main>
+        <?php if ($success_message): ?>
+            <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); color: #065f46; padding: 1rem; text-align: center; font-weight: 500;">
+                ✅ <?php echo htmlspecialchars($success_message); ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Hero Section -->
         <section class="hero">
             <div class="container">
@@ -67,10 +67,78 @@ unset($_SESSION['success']);
             </div>
         </section>
 
+        <!-- Top Projects of the Week -->
+        <?php if (!empty($top_projects)): ?>
+            <section style="padding: 4rem 0; background: var(--white);">
+                <div class="container">
+                    <div style="text-align: center; margin-bottom: 3rem;">
+                        <h2 style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+                            🏆 Projets en vedette de la semaine
+                        </h2>
+                        <p style="font-size: 1.125rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;">Les projets les plus appréciés par notre communauté cette semaine</p>
+                    </div>
+                    
+                    <div class="projects-grid" style="max-width: 1000px; margin: 0 auto;">
+                        <?php foreach ($top_projects as $index => $project): ?>
+                            <?php $like_count = $likeModel->countByProject($project['id']); ?>
+                            <div class="project-card featured fade-in-up" style="animation-delay: <?php echo $index * 0.1; ?>s;">
+                                <?php if ($project['image_path']): ?>
+                                    <div class="project-image">
+                                        <img src="<?php echo htmlspecialchars($project['image_path']); ?>" 
+                                             alt="<?php echo htmlspecialchars($project['title']); ?>"
+                                             loading="lazy">
+                                        <span class="featured-badge">🏆 Top semaine</span>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="project-image" style="background: linear-gradient(135deg, var(--warning), var(--primary)); display: flex; align-items: center; justify-content: center;">
+                                        <div style="font-size: 3rem; opacity: 0.7;">🏆</div>
+                                        <span class="featured-badge">🏆 Top semaine</span>
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="project-content">
+                                    <h3><?php echo htmlspecialchars($project['title']); ?></h3>
+                                    <p class="project-author">Par <?php echo htmlspecialchars($project['first_name'] . ' ' . $project['last_name']); ?></p>
+                                    <p class="project-description"><?php echo htmlspecialchars(substr($project['description'], 0, 120)) . (strlen($project['description']) > 120 ? '...' : ''); ?></p>
+                                    
+                                    <?php if ($project['technologies']): ?>
+                                        <div class="project-technologies">
+                                            <?php 
+                                            $techs = explode(',', $project['technologies']);
+                                            foreach (array_slice($techs, 0, 3) as $tech): 
+                                            ?>
+                                                <span class="tech-tag"><?php echo htmlspecialchars(trim($tech)); ?></span>
+                                            <?php endforeach; ?>
+                                            <?php if (count($techs) > 3): ?>
+                                                <span class="tech-tag" style="background: var(--gray-200);">+<?php echo count($techs) - 3; ?></span>
+                                            <?php endif; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="project-actions" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <a href="voirprojet.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">Voir détails</a>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--error); font-weight: 600;">
+                                            ❤️ <?php echo $like_count; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="viewprojects.php" class="btn btn-secondary">
+                            Voir tous les projets →
+                        </a>
+                    </div>
+                </div>
+            </section>
+        <?php endif; ?>
+
         <!-- Projects Section -->
         <section class="projects-section">
             <div class="container">
-                <h2 class="fade-in">Projets en vedette</h2>
+                <h2 class="fade-in">Projets récents</h2>
                 
                 <?php if (empty($projects)): ?>
                     <div class="empty-state fade-in">
@@ -125,7 +193,7 @@ unset($_SESSION['success']);
                                     <?php endif; ?>
                                     
                                     <div class="project-actions">
-                                        <a href="project.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">Voir détails</a>
+                                        <a href="voirprojet.php?id=<?php echo $project['id']; ?>" class="btn btn-primary btn-sm">Voir détails</a>
                                         <?php if ($project['external_link']): ?>
                                             <a href="<?php echo htmlspecialchars($project['external_link']); ?>" 
                                                target="_blank" class="btn btn-secondary btn-sm">🔗 Voir le site</a>
@@ -160,6 +228,12 @@ unset($_SESSION['success']);
                             <?php endif; ?>
                         </div>
                     <?php endif; ?>
+                    
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="viewprojects.php" class="btn btn-primary">
+                            Voir tous les projets →
+                        </a>
+                    </div>
                 <?php endif; ?>
             </div>
         </section>

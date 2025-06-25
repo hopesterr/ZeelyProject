@@ -277,7 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span style="font-size: 1.2rem;">📊</span>
                                 Retour au tableau de bord
                             </a>
-                            <a href="my-projects.php" class="btn btn-secondary" style="justify-content: flex-start; gap: 0.75rem;">
+                            <a href="projects.php" class="btn btn-secondary" style="justify-content: flex-start; gap: 0.75rem;">
                                 <span style="font-size: 1.2rem;">💼</span>
                                 Mes projets
                             </a>
