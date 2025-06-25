@@ -99,6 +99,7 @@ Ce projet est une application web moderne développée en **PHP** et **MySQL**. 
 2. **Importer la base de données** :
    - Ouvrir `config/database.sql` dans phpMyAdmin ou via la ligne de commande MySQL
    - Exécuter le script pour créer la base et les tables
+   - utiliser le fichier donnees_de_test.sql pour y avoir les données de notre base local
 3. **Configurer la connexion à la base de données** :
    Modifier le fichier `config/database.php` si besoin :
    ```php
